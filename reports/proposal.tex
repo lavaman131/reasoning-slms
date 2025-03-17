@@ -21,16 +21,101 @@
 \begin{document}
 \maketitle
 
-Proposal (Due March 18)
-• 1-2 pages detailing:
-– Project title
-– Problem statement
-– Proposed RL techniques
-– Expected challenges
-– Datasets or simulation environments (if applicable)
-– Evaluation metrics
-
 \section*{Introduction}
+
+Recent advancements in large language models (LLMs) have demonstrated impressive reasoning capabilities, but these models are computationally intensive and resource-demanding, requiring significant infrastructure for both training and inference. There is growing interest in exploring whether smaller language models (SLMs) can achieve comparable reasoning abilities while being more efficient and accessible. This project investigates the application of reinforcement learning techniques, specifically Group Relative Policy Optimization (GRPO), to enhance reasoning capabilities in lightweight SLMs like Gemma 3.
+
+\section*{Problem Statement}
+
+While large language models have shown remarkable reasoning capabilities, their size creates barriers for widespread deployment, especially in resource-constrained environments. Small language models offer potential advantages in terms of efficiency, latency, and accessibility, but typically demonstrate inferior reasoning performance compared to their larger counterparts. The core problem this project addresses is how to effectively train SLMs to perform complex reasoning tasks while maintaining their computational efficiency advantages.
+
+Specifically, we will investigate:
+\begin{itemize}
+	\item How can GRPO be effectively applied to enhance reasoning capabilities in lightweight SLMs?
+	\item What modifications to existing GRPO implementations are necessary to optimize for SLMs?
+	\item How do reasoning-enhanced SLMs compare to larger models on standardized reasoning benchmarks?
+	\item What are the computational trade-offs between model size and reasoning performance?
+\end{itemize}
+
+\section*{Proposed RL Techniques}
+
+Our approach centers on the application of Group Relative Policy Optimization (GRPO), a reinforcement learning technique that has shown promise in improving mathematical reasoning in language models. GRPO offers several advantages over traditional RL methods like Proximal Policy Optimization (PPO):
+
+\begin{itemize}
+	\item \textbf{Elimination of value function}: Unlike PPO, GRPO does not require a separate critic model, reducing computational overhead and memory requirements—crucial advantages when working with resource-constrained environments.
+
+	\item \textbf{Group-based advantage estimation}: GRPO generates multiple responses for the same prompt and computes advantages based on their relative performance within the group, eliminating the need for a value function.
+\end{itemize}
+
+Our implementation will follow a multi-stage approach:
+\begin{enumerate}
+	\item Initial supervised fine-tuning (SFT) on high-quality reasoning datasets
+	\item GRPO training with deterministic rewards for reasoning trace quality, consistency, and correctness
+	\item Generation and filtering of synthetic data using stronger models as judges
+	\item Final GRPO alignment phase to enhance helpfulness while maintaining reasoning capabilities
+\end{enumerate}
+
+We will explore modifications to the standard GRPO algorithm to better suit SLMs, including:
+\begin{itemize}
+	\item Adaptive batch sizes based on available computational resources
+	\item Targeted reward functions specific to reasoning tasks
+	\item Integration of domain-specific knowledge into the training pipeline
+\end{itemize}
+
+\section*{Expected Challenges}
+
+Several challenges are anticipated in this project:
+
+\begin{itemize}
+	\item \textbf{Model capacity limitations}: Small language models have inherently limited capacity, which may constrain their ability to learn complex reasoning patterns. We will need to carefully balance the complexity of reasoning tasks with model capacity.
+
+	\item \textbf{Reward design complexity}: Designing effective reward functions for reasoning tasks is non-trivial. Rewards must be informative enough to guide learning but simple enough to compute efficiently.
+
+	\item \textbf{Computational efficiency}: While SLMs require less computational resources than LLMs, the GRPO training process still demands significant computing power, especially for generating multiple responses per prompt. Optimizing this process will be critical.
+
+	\item \textbf{Overfitting to reward structure}: RL-trained models can exploit patterns in reward functions rather than learning genuine reasoning capabilities. Ensuring generalization beyond the specific training rewards will be essential.
+
+	\item \textbf{Evaluation challenges}: Assessing reasoning capabilities fairly across different model scales requires careful benchmark selection and potentially new evaluation methodologies.
+\end{itemize}
+
+\section*{Datasets}
+
+
+We will evaluate our approach using the following benchmarks used in DeepSeek-R1 \cite{deepseekai2025deepseekr1incentivizingreasoningcapability}:
+
+\begin{itemize}
+	\item \textbf{SWE-bench} \cite{jimenez2024swebenchlanguagemodelsresolve}: Evaluates model capability to solve real-world software engineering issues from GitHub repositories. Models generate code patches to resolve described problems, with a validated subset (SWE-bench Verified) providing more accurate evaluation by filtering out infeasible tasks.
+
+	\item \textbf{MMLU} (Massive Multitask Language Understanding) \cite{hendrycks2021measuringmassivemultitasklanguage}: Comprises approximately 16,000 multiple-choice questions across 57 academic subjects including mathematics, law, philosophy, and science, designed to evaluate general knowledge and reasoning capabilities across diverse disciplines.
+
+	\item \textbf{GPQA} (Graduate-Level Google-Proof Q\&A) \cite{rein2023gpqagraduatelevelgoogleproofqa}: A challenging benchmark resistant to simple lookup strategies, evaluating advanced reasoning through graduate-level questions requiring deep understanding rather than surface-level retrieval.
+
+	\item \textbf{Codeforces} \cite{quan2025codeelobenchmarkingcompetitionlevelcode}: A competitive programming dataset from real-world contests, featuring algorithmic coding problems of varying complexity that test the ability to generate correct and efficient code solutions.
+
+	\item \textbf{AIME 2024} (American Invitational Mathematics Examination): High-level math competition problems requiring multi-step logical reasoning, creativity, and deep mathematical insight.
+
+	\item \textbf{MATH} \cite{hendrycks2021measuringmathematicalproblemsolving}: Comprises challenging math competition-style problems across various difficulty levels and domains, involving detailed step-by-step reasoning processes to evaluate complex mathematical reasoning capabilities.
+\end{itemize}
+
+For our experimental environment, we will use Gemma 3 models (particularly the 1B and 4B variants) as our base SLMs, leveraging their state-of-the-art performance for models in their size class and their multi-language support. We will implement our training pipeline using standard deep learning frameworks and reinforcement learning libraries.
+
+\section*{Evaluation Metrics}
+
+To evaluate the effectiveness of our approach, we will employ a comprehensive set of metrics:
+
+\begin{itemize}
+	\item \textbf{Task-specific accuracy}: Performance on reasoning benchmarks such as GSM8K, MATH, LogiQA, and others.
+
+	\item \textbf{Performance-to-parameter ratio}: Analysis of reasoning capabilities relative to model size compared to larger models.
+
+	\item \textbf{Generalization capabilities}: Performance on out-of-distribution reasoning tasks not seen during training. For example, we can provide the model with logic puzzles and math problems and see if it can solve them.
+\end{itemize}
+
+Additionally, we will conduct ablation studies to assess the contribution of different components of our approach, such as the impact of various reward functions, the effect of different group sizes in GRPO, and the influence of initial supervised fine-tuning quality.
+
+\section*{Conclusion}
+
+This project aims to advance the state of the art in small language models by enhancing their reasoning capabilities through the application of Group Relative Policy Optimization. If successful, our approach could significantly expand the accessibility of reasoning-capable language models, enabling deployment in resource-constrained environments and democratizing access to advanced AI capabilities. The techniques developed may also provide insights into the fundamental relationship between model size and reasoning abilities, potentially informing more efficient architectures for future language models.
 
 \printbibliography
 
