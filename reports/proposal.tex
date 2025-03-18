@@ -55,11 +55,10 @@ Our implementation will follow a multi-stage approach:
 	\item Final GRPO alignment phase to enhance helpfulness while maintaining reasoning capabilities
 \end{enumerate}
 
-We will explore modifications to the standard GRPO algorithm to better suit SLMs, including:
+We will explore different variations of the standard GRPO algorithm, including:
 \begin{itemize}
-	\item Adaptive batch sizes based on available computational resources
-	\item Targeted reward functions specific to reasoning tasks
-	\item Integration of domain-specific knowledge into the training pipeline
+	\item Targeted reward functions specific to reasoning tasks such as process, outcome-based reward models, and custom reward models.
+	\item Distillation of reasoning traces from larger models to improve the quality of reasoning traces in the SLMs.
 \end{itemize}
 
 \section*{Expected Challenges}
@@ -92,7 +91,7 @@ We will evaluate our approach using the following benchmarks used in DeepSeek-R1
 
 	\item \textbf{Codeforces} \cite{quan2025codeelobenchmarkingcompetitionlevelcode}: A competitive programming dataset from real-world contests, featuring algorithmic coding problems of varying complexity that test the ability to generate correct and efficient code solutions.
 
-	\item \textbf{AIME 2024} (American Invitational Mathematics Examination) \cite{deepseekai2025deepseekr1incentivizingreasoningcapability}: High-level math competition problems requiring multi-step logical reasoning, creativity, and deep mathematical insight.
+	\item \textbf{AIME 2024} (American Invitational Mathematics Examination) \cite{maa2024aime}: High-level math competition problems requiring multi-step logical reasoning, creativity, and deep mathematical insight.
 
 	\item \textbf{MATH} \cite{hendrycks2021measuringmathematicalproblemsolving}: Comprises challenging math competition-style problems across various difficulty levels and domains, involving detailed step-by-step reasoning processes to evaluate complex mathematical reasoning capabilities.
 \end{itemize}
@@ -104,11 +103,11 @@ For our experimental environment, we will use Gemma 3 models (particularly the 1
 To evaluate the effectiveness of our approach, we will employ a comprehensive set of metrics:
 
 \begin{itemize}
-	\item \textbf{Task-specific accuracy}: Performance on reasoning benchmarks such as GSM8K, MATH, LogiQA, and others.
+	\item \textbf{Task-specific accuracy}: Performance on reasoning benchmarks.
 
 	\item \textbf{Performance-to-parameter ratio}: Analysis of reasoning capabilities relative to model size compared to larger models.
 
-	\item \textbf{Generalization capabilities}: Performance on out-of-distribution reasoning tasks not seen during training. For example, we can provide the model with logic puzzles and math problems and see if it can solve them.
+	\item \textbf{Downstream tasks}: Some interesting downstream tasks to explore include structured output generation, code generation, tool calling, and more.
 \end{itemize}
 
 Additionally, we will conduct ablation studies to assess the contribution of different components of our approach, such as the impact of various reward functions, the effect of different group sizes in GRPO, and the influence of initial supervised fine-tuning quality.
