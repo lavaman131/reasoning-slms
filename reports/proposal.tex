@@ -44,7 +44,7 @@ Our approach centers on the application of Group Relative Policy Optimization (G
 \begin{itemize}
 	\item \textbf{Elimination of value function}: Unlike PPO, GRPO does not require a separate critic model, reducing computational overhead and memory requirements—crucial advantages when working with resource-constrained environments.
 
-	\item \textbf{Group-based advantage estimation}: GRPO generates multiple responses for the same prompt and computes advantages based on their relative performance within the group, eliminating the need for a value function.
+	\item \textbf{Group-based advantage estimation}: GRPO samples multiple responses from the policy for the same prompt and computes the average reward instead of using a separate critic model.
 \end{itemize}
 
 Our implementation will follow a multi-stage approach:
