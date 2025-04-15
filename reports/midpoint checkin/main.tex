@@ -26,7 +26,7 @@
 Recent advances in Large Language Model (LLM) fine-tuning have demonstrated how reinforcement learning techniques can dramatically enhance reasoning capabilities, with methods like DeepSeek's Group Relative Policy Optimization (GRPO) eliminating the need for separate critic models. Building on this foundation, Decoupled Clip and Dynamic Sampling Policy Optimization (DAPO) has achieved impressive results on complex reasoning benchmarks with large models through its innovative clip-higher strategy, dynamic sampling mechanism, token-level policy gradient loss, and overlong reward shaping. While these techniques have proven effective for models with tens of billions of parameters, their applicability to smaller, more accessible models remains unexplored. This project aims to implement DAPO for fine-tuning the compact Gemma 4B model, systematically experimenting with modifications to the algorithm's core components—including refined clip-higher strategies, optimized dynamic sampling, adjusted overlong reward shaping, and the introduction of generalized KL-divergence—to determine whether sophisticated reasoning capabilities can be induced in resource-constrained language models without requiring massive computational resources.
 
 \section*{Literature Review}
-    
+
 \subsection*{Proximal Policy Optimization (PPO) \cite{schulman2017proximalpolicyoptimizationalgorithms}}
 
 Proximal Policy Optimization (PPO) is a policy gradient reinforcement learning algorithm designed to improve training stability and sample efficiency relative to previous methods. PPO iteratively samples data from interaction with the environment and optimizes a specially designed surrogate objective function through stochastic gradient ascent. The key innovation in PPO is its clipped surrogate objective, which prevents excessively large policy updates by restricting the ratio of the new policy probabilities to the old policy within a small, predefined range around 1. This approach retains the advantages of Trust Region Policy Optimization (TRPO), such as stable updates and robustness, while being simpler to implement, requiring only first-order optimization methods. Empirically, PPO achieves better sample efficiency and overall performance than traditional policy gradient methods and TRPO on a range of benchmark tasks, including simulated robotic locomotion and Atari games.
@@ -39,7 +39,7 @@ GRPO works by initially sampling multiple outputs from the existing policy model
 
 Compared to previous methods, GRPO demonstrates superior efficiency by substantially reducing training resource requirements and complexity. DeepSeek’s experimental results show significant improvements in reasoning tasks, outperforming conventional supervised fine-tuning methods. Models fine-tuned with GRPO exhibit strong reasoning capabilities, achieving benchmark performance comparable to industry-leading models like OpenAI's o1 series. Thus, GRPO represents a highly effective and resource-efficient approach for training advanced reasoning capabilities into LLMs.
 
-\subsection*{Decoupled Clip and Dynamic sAmpling Policy Optimization (DAPO) \cite{yu2025dapoopensourcellmreinforcement}}
+\subsection*{Decoupled Clip and Dynamic Sampling Policy Optimization (DAPO) \cite{yu2025dapoopensourcellmreinforcement}}
 
 The Decoupled Clip and Dynamic sAmpling Policy Optimization (DAPO) algorithm represents an advancement in large-scale reinforcement learning for large language models (LLMs), explicitly designed to improve reasoning capabilities. Building on the foundations of Group Relative Policy Optimization (GRPO), DAPO addresses several critical issues observed in GRPO implementations, including entropy collapse, reward noise, and training instability.
 
@@ -57,7 +57,7 @@ These improvements yield substantial performance gains. Experimentally validated
 
 \subsection*{Generalized Kullback–Leibler (GKL) Divergence  \cite{cui2025generalizedkullbackleiblerdivergenceloss}}
 
- Generalized Kullback–Leibler (GKL) Divergence Loss explores the limitations of the widely used Kullback–Leibler (KL) Divergence loss by mathematically proving its equivalence to a Decoupled Kullback–Leibler (DKL) loss, which consists of a weighted Mean Square Error (wMSE) component and a Cross-Entropy loss with soft labels. The authors identify two primary issues with the standard KL loss: (1) asymmetric gradient optimization, which neglects the wMSE component in scenarios such as knowledge distillation; and (2) sample-wise biases in predictions that undermine training stability.
+Generalized Kullback–Leibler (GKL) Divergence Loss explores the limitations of the widely used Kullback–Leibler (KL) Divergence loss by mathematically proving its equivalence to a Decoupled Kullback–Leibler (DKL) loss, which consists of a weighted Mean Square Error (wMSE) component and a Cross-Entropy loss with soft labels. The authors identify two primary issues with the standard KL loss: (1) asymmetric gradient optimization, which neglects the wMSE component in scenarios such as knowledge distillation; and (2) sample-wise biases in predictions that undermine training stability.
 
 To address these problems, the authors propose the Generalized KL (GKL) Divergence Loss. The key innovations in GKL include explicitly breaking the asymmetric gradient optimization to ensure both components (wMSE and Cross-Entropy) contribute effectively to training, and integrating class-wise global information through a smoother weighting function. Specifically, the smoother weight function mitigates convergence challenges by stabilizing training for classes with high predicted scores, thereby enhancing the robustness of training optimization.
 
@@ -66,17 +66,20 @@ Experiments conducted on CIFAR-10/100, ImageNet, and vision-language datasets de
 
 \section*{Proposed RL Techniques}
 
-The project employs a systematic approach to investigate DAPO-based fine-tuning of the Gemma 4B model using the AIME dataset. Specifically, the research proceeds in the following stages:
+The project employs a systematic approach to investigate DAPO-based fine-tuning of the Gemma 4B model using the AIME dataset. Specifically, the research hypothesizes the following improvements to the DAPO algorithm:
 
-\begin{enumerate}
-\item Benchmark the out-of-the-box performance of Gemma 4B on the AIME reasoning dataset to establish a baseline.
-\item Implement standard DAPO fine-tuning on Gemma 4B and evaluate improvements in reasoning performance relative to the baseline.
-\item Experimentally modify core components of DAPO, including adjusting the clip-higher strategy hyperparameters, employing alternative dynamic sampling methods, varying the degree of the overlong response penalty, and reintroducing the KL-divergence term—specifically substituting the original KL-divergence with the recently proposed Generalized KL (GKL) Divergence.
-\item Evaluate the fine-tuned Gemma 4B models after each modification, analyzing the impacts on performance and efficiency.
-\end{enumerate}
+\begin{itemize}
+	\item Replace the dynamic sampling procedure, filtering out prompts with accuracy equal to 1 and 0, with a dynamic sampling procedure that injects adversarial prompts to drive these prompts as artificial examples to improve the model's robustness.
+	\item Replace the soft overlong punishment with a soft perplexity penalty.
+	\item Re-add the KL-divergence term, but use the Generalized KL (GKL) Divergence Loss.
+\end{itemize}
+
+\section*{Current Results}
+We have set up the DAPO environment for inference and training. We have started to establish baselines for the Gemma 4B model on the AIME dataset.
 
 This approach uniquely applies advanced reinforcement learning techniques—originally developed for much larger language models—to a significantly smaller model. By systematically varying key algorithmic components, the study aims to demonstrate the potential of sophisticated RL fine-tuning to induce robust reasoning capabilities in computationally accessible models.
-\section*{Expected Challenges}
+
+\section*{Challenges}
 
 Several challenges are anticipated in this project:
 
@@ -91,6 +94,12 @@ Several challenges are anticipated in this project:
 
 	\item \textbf{Evaluation challenges}: Assessing reasoning capabilities fairly across different model scales requires careful benchmark selection and potentially new evaluation methodologies.
 \end{itemize}
+
+Up until this point we faced quite a few technical issues, including reproducing the package dependencies for the DAPO algorithm inference and training. Specifically, there were issues with missing shared object files in the CUDA library which we resolved. Another struggle was running inference on the Qwen2.5-32B base model which requires 64GB of memory in float16/bfloat16 precision.
+
+\section*{Next Steps}
+
+We are finishing establishing baselines for the Gemma 4B model on the AIME dataset (base Gemma 4B model compared to DAPO Gemma 4B model). Next, we will be experimenting with modifications and other ablation studies to the DAPO algorithm and observing the effects on performance. Finally we plan on creating a web demo on HuggingFace to showcase the performance of the fine-tuned model.
 
 \printbibliography
 
