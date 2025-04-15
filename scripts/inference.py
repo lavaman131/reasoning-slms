@@ -23,7 +23,7 @@ def main():
     llm = LLM(
         model=model,
         dtype=torch.bfloat16,
-        tensor_parallel_size=2,
+        tensor_parallel_size=4,
         gpu_memory_utilization=0.95,
     )
 
