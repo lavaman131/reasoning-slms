@@ -13,7 +13,9 @@ conda create -n verl python==3.10
 conda activate verl
 
 # install verl together with some lightweight dependencies in setup.py
-python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu118
+conda install -c nvidia nccl
+conda install numpy ninja
+python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu126
 python -m pip install flash-attn --no-build-isolation
 cd verl
 python -m pip install -e .
