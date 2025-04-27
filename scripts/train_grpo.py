@@ -5,7 +5,7 @@ import re
 from trl import GRPOConfig, GRPOTrainer, RewardConfig
 from functools import partial, update_wrapper
 import os
-
+from dotenv import load_dotenv
 import torch
 
 # For peft
@@ -134,6 +134,7 @@ def check_numbers(
 
 
 def main() -> None:
+    load_dotenv()
     reasoning_start = "<start_working_out>"
     reasoning_end = "<end_working_out>"
     solution_start = "<SOLUTION>"
@@ -170,9 +171,6 @@ def main() -> None:
     max_seq_length = 1024
     max_prompt_length = 256
     experiment_name = "gemma-3-1b-it-grpo-baseline"
-    project_name = "dapo"
-
-    os.environ["WANDB_PROJECT"] = project_name
 
     training_args = GRPOConfig(
         learning_rate=5e-6,
