@@ -7,6 +7,11 @@ from trl.trainer.grpo_trainer import RewardFunc
 from functools import partial, update_wrapper
 import os
 
+import torch
+
+# For peft
+from peft import LoraConfig
+
 
 def extract_hash_answer(text: str) -> Optional[str]:
     if "####" not in text:
@@ -192,17 +197,34 @@ def main() -> None:
         report_to="wandb",  # Can use Weights & Biases
         run_name=experiment_name,
         output_dir="outputs",
+        seed=3407
     )
 
     model_id = "google/gemma-3-1b-it"
-    model = AutoModelForCausalLM.from_pretrained(model_id, attn_implementation="eager")
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id,
+        attn_implementation="eager",
+        load_in_4bit=True,
+        bnb_4bit_compute_dtype=torch.bfloat16
+    )
+        
     tokenizer = AutoTokenizer.from_pretrained(
         model_id, use_fast=True, trust_remote_code=True
+    )
+
+    lora_config = LoraConfig(
+        r = 8,           # Larger = higher accuracy, but might overfit
+        lora_alpha = 8,  # Recommended alpha == r at least
+        lora_dropout = 0,
+        bias = "none",
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                               "gate_proj", "up_proj", "down_proj"],
     )
 
     trainer = GRPOTrainer(
         model=model,
         processing_class=tokenizer,
+        peft_config = lora_config,
         reward_funcs=[
             update_wrapper(
                 partial(match_format_exactly, match_format=match_format),
