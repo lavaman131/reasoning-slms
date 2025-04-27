@@ -13,4 +13,4 @@ module load cmake gcc/10.2.0 llvm/9.0.1 miniconda openmpi cuda/12.5
 
 conda activate trl
 
-accelerate launch scripts/train_grpo.py
+accelerate launch scripts/train_grpo.py --use_peft
