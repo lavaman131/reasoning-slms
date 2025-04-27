@@ -3,7 +3,6 @@ from datasets import load_dataset
 from typing import Optional, Any, List, Dict, Iterable
 import re
 from trl import GRPOConfig, GRPOTrainer, RewardConfig
-from trl.trainer.grpo_trainer import RewardFunc
 from functools import partial, update_wrapper
 import os
 
@@ -190,14 +189,14 @@ def main() -> None:
         max_prompt_length=max_prompt_length,
         max_completion_length=max_seq_length - max_prompt_length,
         # num_train_epochs = 1, # Set to 1 for a full training run
-        max_steps=50,
-        save_steps=50,
+        max_steps=500,
+        save_steps=100,
         max_grad_norm=0.1,
         bf16=True,
         report_to="wandb",  # Can use Weights & Biases
         run_name=experiment_name,
         output_dir="outputs",
-        seed=3407
+        seed=3407,
     )
 
     model_id = "google/gemma-3-1b-it"
@@ -205,26 +204,33 @@ def main() -> None:
         model_id,
         attn_implementation="eager",
         load_in_4bit=True,
-        bnb_4bit_compute_dtype=torch.bfloat16
+        bnb_4bit_compute_dtype=torch.bfloat16,
     )
-        
+
     tokenizer = AutoTokenizer.from_pretrained(
         model_id, use_fast=True, trust_remote_code=True
     )
 
     lora_config = LoraConfig(
-        r = 8,           # Larger = higher accuracy, but might overfit
-        lora_alpha = 8,  # Recommended alpha == r at least
-        lora_dropout = 0,
-        bias = "none",
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
-                               "gate_proj", "up_proj", "down_proj"],
+        r=8,  # Larger = higher accuracy, but might overfit
+        lora_alpha=8,  # Recommended alpha == r at least
+        lora_dropout=0,
+        bias="none",
+        target_modules=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ],
     )
 
     trainer = GRPOTrainer(
         model=model,
         processing_class=tokenizer,
-        peft_config = lora_config,
+        peft_config=lora_config,
         reward_funcs=[
             update_wrapper(
                 partial(match_format_exactly, match_format=match_format),
@@ -253,8 +259,9 @@ def main() -> None:
 
     trainer.train()
 
-    model.save_pretrained(experiment_name)  # Local saving
-    tokenizer.save_pretrained(experiment_name)  # Local saving
+    # Local saving
+    model.save_pretrained(experiment_name)
+    tokenizer.save_pretrained(experiment_name)
 
 
 if __name__ == "__main__":
