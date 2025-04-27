@@ -487,4 +487,5 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
-DAPO-Qwen-32B
+wandb
+outputs
