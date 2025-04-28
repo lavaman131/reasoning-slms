@@ -1,3 +1,5 @@
+import unsloth
+from unsloth import FastModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from datasets import load_dataset
 from typing import Optional, Any, List, Dict, Iterable
@@ -8,7 +10,7 @@ import os
 from dotenv import load_dotenv
 import torch
 
-from unsloth import FastModel
+
 # For peft
 from peft import LoraConfig
 
@@ -171,7 +173,7 @@ def main() -> None:
 
     max_seq_length = 1024
     max_prompt_length = 256
-    experiment_name = "gemma-3-1b-it-grpo-4bit-unsloth"
+    experiment_name = "gemma-3-1b-it-grpo-4bit-unsloth-baseline"
 
     # Change 1
     training_args = GRPOConfig(
@@ -192,8 +194,9 @@ def main() -> None:
     max_steps = 50,
     save_steps = 50,
     max_grad_norm = 0.1,
-    report_to = "none", # Can use Weights & Biases
+    report_to = "wandb", # Can use Weights & Biases
     output_dir = "outputs",
+    bf16=True,
     )  
 
     model, tokenizer = FastModel.from_pretrained(

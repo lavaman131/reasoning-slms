@@ -2,7 +2,7 @@
 
 #$ -P ds543
 #$ -l h_rt=24:00:00
-#$ -N gemma-3-1b-it-grpo-baseline
+#$ -N gemma-3-1b-it-grpo-4bit-baseline
 #$ -pe omp 8
 #$ -j y # Merge the error and output streams into a single file
 #$ -l gpus=4

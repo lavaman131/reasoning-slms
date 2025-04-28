@@ -170,7 +170,7 @@ def main() -> None:
 
     max_seq_length = 1024
     max_prompt_length = 256
-    experiment_name = "gemma-3-1b-it-grpo-baseline"
+    experiment_name = "gemma-3-1b-it-grpo-4bit-baseline"
 
     training_args = GRPOConfig(
         learning_rate=5e-6,

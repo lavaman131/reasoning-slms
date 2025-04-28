@@ -5,7 +5,7 @@
 #$ -N gemma-3-1b-it-grpo-4bit-unsloth
 #$ -pe omp 8
 #$ -j y # Merge the error and output streams into a single file
-#$ -l gpus=4
+#$ -l gpus=2
 #$ -l gpu_memory=48G
 #$ -l gpu_c=7.0
 
