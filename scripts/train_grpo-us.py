@@ -1,3 +1,5 @@
+import unsloth
+from unsloth import FastModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from datasets import load_dataset
 from typing import Optional, Any, List, Dict, Iterable
@@ -7,6 +9,7 @@ from functools import partial, update_wrapper
 import os
 from dotenv import load_dotenv
 import torch
+
 
 # For peft
 from peft import LoraConfig
@@ -170,65 +173,60 @@ def main() -> None:
 
     max_seq_length = 1024
     max_prompt_length = 256
-    experiment_name = "gemma-3-1b-it-grpo-4bit-baseline"
+    experiment_name = "gemma-3-1b-it-grpo-4bit-unsloth-baseline"
 
+    # Change 1
     training_args = GRPOConfig(
-        learning_rate=5e-6,
-        adam_beta1=0.9,
-        adam_beta2=0.99,
-        weight_decay=0.1,
-        warmup_ratio=0.1,
-        lr_scheduler_type="cosine",
-        optim="adamw_torch_fused",
-        logging_steps=1,
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=1,  # Increase to 4 for smoother training
-        num_generations=4,  # Decrease if out of memory
-        max_prompt_length=max_prompt_length,
-        max_completion_length=max_seq_length - max_prompt_length,
-        # num_train_epochs = 1, # Set to 1 for a full training run
-        max_steps=200,
-        save_steps=50,
-        max_grad_norm=0.1,
-        bf16=True,
-        report_to="wandb",  # Can use Weights & Biases
-        run_name=experiment_name,
-        output_dir="outputs",
-        seed=3407,
-    )
+    learning_rate = 5e-6,
+    adam_beta1 = 0.9,
+    adam_beta2 = 0.99,
+    weight_decay = 0.1,
+    warmup_ratio = 0.1,
+    lr_scheduler_type = "cosine",
+    optim = "adamw_torch_fused",
+    logging_steps = 1,
+    per_device_train_batch_size = 4,
+    gradient_accumulation_steps = 1, # Increase to 4 for smoother training
+    num_generations = 4, # Decrease if out of memory
+    max_prompt_length = max_prompt_length,
+    max_completion_length = max_seq_length - max_prompt_length,
+    # num_train_epochs = 1, # Set to 1 for a full training run
+    max_steps = 50,
+    save_steps = 50,
+    max_grad_norm = 0.1,
+    report_to = "wandb", # Can use Weights & Biases
+    output_dir = "outputs",
+    bf16=True,
+    )  
 
-    model_id = "google/gemma-3-1b-it"
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        attn_implementation="eager",
-        load_in_4bit=True,
-        bnb_4bit_compute_dtype=torch.bfloat16,
-    )
+    model, tokenizer = FastModel.from_pretrained(
+    model_name = "unsloth/gemma-3-1b-it-unsloth-bnb-4bit",
+    max_seq_length = max_seq_length, # Choose any for long context!
+    load_in_4bit = True,  # 4 bit quantization to reduce memory
+    load_in_8bit = False, # [NEW!] A bit more accurate, uses 2x memory
+    full_finetuning = False,
+    dtype=torch.bfloat16
+    ) # [NEW!] We have full finetuning now!
+    # token = "hf_...", # use one if using gated models
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_id, use_fast=True, trust_remote_code=True
-    )
+    model = FastModel.get_peft_model(
+    model,
+    finetune_vision_layers     = False, # Turn off for just text!
+    finetune_language_layers   = True,  # Should leave on!
+    finetune_attention_modules = True,  # Attention good for GRPO
+    finetune_mlp_modules       = True,  # SHould leave on always!
 
-    lora_config = LoraConfig(
-        r=8,  # Larger = higher accuracy, but might overfit
-        lora_alpha=8,  # Recommended alpha == r at least
-        lora_dropout=0,
-        bias="none",
-        target_modules=[
-            "q_proj",
-            "k_proj",
-            "v_proj",
-            "o_proj",
-            "gate_proj",
-            "up_proj",
-            "down_proj",
-        ],
+    r = 8,           # Larger = higher accuracy, but might overfit
+    lora_alpha = 8,  # Recommended alpha == r at least
+    lora_dropout = 0,
+    bias = "none",
+    random_state = 3407,
+    dtype=torch.bfloat16
     )
 
     trainer = GRPOTrainer(
-        model=model,
-        processing_class=tokenizer,
-        peft_config=lora_config,
+        model = model,
+        processing_class = tokenizer,
         reward_funcs=[
             update_wrapper(
                 partial(match_format_exactly, match_format=match_format),
@@ -251,10 +249,9 @@ def main() -> None:
                 partial(check_numbers, match_numbers=match_numbers), check_numbers
             ),
         ],
-        args=training_args,
-        train_dataset=train_dataset,
+        args = training_args,
+        train_dataset = train_dataset,
     )
-
     trainer.train()
 
     # Local saving
