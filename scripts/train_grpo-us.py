@@ -207,6 +207,7 @@ def main() -> None:
         load_in_8bit=False,  # [NEW!] A bit more accurate, uses 2x memory
         full_finetuning=False,
         dtype=torch.bfloat16,
+        use_gradient_checkpointing = False
     )  # [NEW!] We have full finetuning now!
     # token = "hf_...", # use one if using gated models
 

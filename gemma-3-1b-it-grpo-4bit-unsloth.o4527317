@@ -1,0 +1,86 @@
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_processes` was set to a value of `2`
+		More than one GPU was found, enabling multi-GPU training.
+		If this was unintended please pass in `--num_processes=1`.
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning.
+🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning.
+Unsloth: Failed to patch SmolVLMForConditionalGeneration forward function.
+Unsloth: Failed to patch SmolVLMForConditionalGeneration forward function.
+🦥 Unsloth Zoo will now patch everything to make training faster!🦥 Unsloth Zoo will now patch everything to make training faster!
+
+INFO 04-28 03:38:31 [__init__.py:239] Automatically detected platform cuda.
+INFO 04-28 03:38:31 [__init__.py:239] Automatically detected platform cuda.
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/projectnb/ds543/zgentile/reasoning-slms/scripts/train_grpo-us.py", line 263, in <module>
+[rank1]:     main()
+[rank1]:   File "/projectnb/ds543/zgentile/reasoning-slms/scripts/train_grpo-us.py", line 202, in main
+[rank1]:     model, tokenizer = FastModel.from_pretrained(
+[rank1]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth/models/loader.py", line 666, in from_pretrained
+[rank1]:     patch_unsloth_smart_gradient_checkpointing(dtype = dtype)
+[rank1]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth_zoo/gradient_checkpointing.py", line 766, in patch_unsloth_smart_gradient_checkpointing
+[rank1]:     initialize_unsloth_gradient_checkpointing(dtype)
+[rank1]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth_zoo/gradient_checkpointing.py", line 330, in initialize_unsloth_gradient_checkpointing
+[rank1]:     GPU_BUFFERS = tuple([torch.empty(2*256*2048, dtype = dtype, device = f"cuda:{i}") for i in range(n_gpus)])
+[rank1]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth_zoo/gradient_checkpointing.py", line 330, in <listcomp>
+[rank1]:     GPU_BUFFERS = tuple([torch.empty(2*256*2048, dtype = dtype, device = f"cuda:{i}") for i in range(n_gpus)])
+[rank1]: RuntimeError: CUDA error: CUDA-capable device(s) is/are busy or unavailable
+[rank1]: CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[rank1]: For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[rank1]: Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/projectnb/ds543/zgentile/reasoning-slms/scripts/train_grpo-us.py", line 263, in <module>
+[rank0]:     main()
+[rank0]:   File "/projectnb/ds543/zgentile/reasoning-slms/scripts/train_grpo-us.py", line 202, in main
+[rank0]:     model, tokenizer = FastModel.from_pretrained(
+[rank0]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth/models/loader.py", line 666, in from_pretrained
+[rank0]:     patch_unsloth_smart_gradient_checkpointing(dtype = dtype)
+[rank0]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth_zoo/gradient_checkpointing.py", line 766, in patch_unsloth_smart_gradient_checkpointing
+[rank0]:     initialize_unsloth_gradient_checkpointing(dtype)
+[rank0]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth_zoo/gradient_checkpointing.py", line 330, in initialize_unsloth_gradient_checkpointing
+[rank0]:     GPU_BUFFERS = tuple([torch.empty(2*256*2048, dtype = dtype, device = f"cuda:{i}") for i in range(n_gpus)])
+[rank0]:   File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/unsloth_zoo/gradient_checkpointing.py", line 330, in <listcomp>
+[rank0]:     GPU_BUFFERS = tuple([torch.empty(2*256*2048, dtype = dtype, device = f"cuda:{i}") for i in range(n_gpus)])
+[rank0]: RuntimeError: CUDA error: CUDA-capable device(s) is/are busy or unavailable
+[rank0]: CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[rank0]: For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[rank0]: Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+[rank0]:[W428 03:38:46.200561742 ProcessGroupNCCL.cpp:1496] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0428 03:38:48.002000 350333 torch/distributed/elastic/multiprocessing/api.py:897] Sending process 350407 closing signal SIGTERM
+E0428 03:38:48.066000 350333 torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 1 (pid: 350408) of binary: /projectnb/dl4ds/students/zgentile/envs/unsloth-env/bin/python
+Traceback (most recent call last):
+  File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/bin/accelerate", line 8, in <module>
+    sys.exit(main())
+  File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/accelerate/commands/accelerate_cli.py", line 50, in main
+    args.func(args)
+  File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/accelerate/commands/launch.py", line 1204, in launch_command
+    multi_gpu_launcher(args)
+  File "/projectnb/dl4ds/students/zgentile/envs/unsloth-env/lib/python3.10/site-packages/accelerate/commands/launch.py", line 825, in multi_gpu_launcher
+    distrib_run.run(args)
+  File "/usr4/ds340/zgentile/.local/lib/python3.10/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/usr4/ds340/zgentile/.local/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr4/ds340/zgentile/.local/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+scripts/train_grpo-us.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-04-28_03:38:48
+  host      : scc-502.scc.bu.edu
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 350408)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
