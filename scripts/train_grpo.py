@@ -178,6 +178,7 @@ def main() -> None:
         warmup_ratio=0.1,
         lr_scheduler_type="cosine",
         optim="adamw_torch_fused",
+        ddp_find_unused_parameters=False,
         logging_steps=1,
         per_device_train_batch_size=4,
         gradient_accumulation_steps=1,  # Increase to 4 for smoother training
