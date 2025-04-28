@@ -13,4 +13,4 @@ module load cmake gcc/10.2.0 llvm/9.0.1 miniconda openmpi cuda/12.5
 
 conda activate unsloth-env
 
-accelerate launch scripts/train_grpo-us.py
+accelerate launch scripts/train_grpo-us.py --use_peft
