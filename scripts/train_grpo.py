@@ -185,7 +185,7 @@ def main() -> None:
         max_prompt_length=max_prompt_length,
         max_completion_length=max_seq_length - max_prompt_length,
         # num_train_epochs = 1, # Set to 1 for a full training run
-        max_steps=200,
+        max_steps=250,
         save_steps=50,
         max_grad_norm=0.1,
         bf16=True,
