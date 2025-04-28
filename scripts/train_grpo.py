@@ -1,14 +1,11 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from datasets import load_dataset
 from typing import Optional, Any, List, Dict, Iterable
 import re
 from trl import GRPOConfig, GRPOTrainer, RewardConfig
 from functools import partial, update_wrapper
 import os
-from dotenv import load_dotenv
 import torch
-
-# For peft
 from peft import LoraConfig
 
 
@@ -134,7 +131,8 @@ def check_numbers(
 
 
 def main() -> None:
-    load_dotenv()
+    os.environ["WANDB_PROJECT"] = "dapo"
+    os.environ["WANDB_ENTITY"] = "artificial-intelligence-research"
     reasoning_start = "<start_working_out>"
     reasoning_end = "<end_working_out>"
     solution_start = "<SOLUTION>"
@@ -198,15 +196,21 @@ def main() -> None:
     )
 
     model_id = "google/gemma-3-1b-it"
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        attn_implementation="eager",
+    quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id,
+        attn_implementation="eager",
+        quantization_config=quantization_config,
+        torch_dtype="auto",
+    )
 
     tokenizer = AutoTokenizer.from_pretrained(
-        model_id, use_fast=True, trust_remote_code=True
+        model_id,
+        use_fast=True,
+        trust_remote_code=True,
     )
 
     lora_config = LoraConfig(

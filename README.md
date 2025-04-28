@@ -2,8 +2,12 @@
 
 ## Training
 
-### GRPO
+### GRPO Baseline
 
 ```bash
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+
 accelerate launch scripts/train_grpo.py --use_peft
+
+accelerate launch scripts/train_grpo-us.py --use_peft
 ```
