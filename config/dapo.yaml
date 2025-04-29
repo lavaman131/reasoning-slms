@@ -1,0 +1,39 @@
+run_name: gemma-3-1b-it-dr_grpo-baseline
+output_dir: ./outputs/gemma-3-1b-it-dr_grpo-baseline
+model_id: google/gemma-3-1b-it
+attn_implementation: eager
+torch_dtype: auto
+
+wandb_project: dapo
+wandb_entity: artificial-intelligence-research
+
+# Dataset config
+dataset_name: openai/gsm8k
+
+# Training arguments
+use_vllm: true
+loss_type: dr_grpo
+epsilon: 0.2
+epsilon_high: null
+beta: 0.04 # KL divergence coefficient
+mask_truncated_completions: false
+learning_rate: 5e-6
+adam_beta1: 0.9
+adam_beta2: 0.99
+weight_decay: 0.1
+warmup_ratio: 0.1
+lr_scheduler_type: cosine
+optim: adamw_torch_fused
+ddp_find_unused_parameters: false
+logging_steps: 1
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 1 # Increase to 4 for smoother training
+num_generations: 4 # Decrease if out of memory
+max_prompt_length: 256
+max_completion_length: 768 # 1024 - 256
+max_steps: 250
+save_steps: 50
+max_grad_norm: 0.1
+bf16: true
+report_to: wandb
+seed: 3407
