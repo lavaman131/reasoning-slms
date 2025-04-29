@@ -24,8 +24,7 @@ class DatasetArguments:
 
 
 @dataclass
-class ExperimentArguments:
-    experiment_name: str
+class WandbArguments:
     wandb_project: str
     wandb_entity: str
 
@@ -152,17 +151,13 @@ def check_numbers(
 
 
 def main() -> None:
-    parser = TrlParser(
-        (ModelArguments, GRPOConfig, DatasetArguments, ExperimentArguments)
-    )
-    model_args, training_args, dataset_args, experiment_args = (
-        parser.parse_args_and_config()
-    )
+    parser = TrlParser((ModelArguments, GRPOConfig, DatasetArguments, WandbArguments))
+    model_args, training_args, dataset_args, wandb_args = parser.parse_args_and_config()
     output_dir = Path(training_args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    os.environ["WANDB_PROJECT"] = experiment_args.wandb_project
-    os.environ["WANDB_ENTITY"] = experiment_args.wandb_entity
+    os.environ["WANDB_PROJECT"] = wandb_args.wandb_project
+    os.environ["WANDB_ENTITY"] = wandb_args.wandb_entity
 
     assert "HF_TOKEN" in os.environ, (
         "HF_TOKEN is not set, set it in environment variables"
