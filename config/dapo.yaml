@@ -1,8 +1,8 @@
-run_name: gemma-3-1b-it-dr_grpo-baseline
-output_dir: ./outputs/gemma-3-1b-it-dr_grpo-baseline
+run_name: gemma-3-1b-it-dapo-baseline
+output_dir: ./outputs/gemma-3-1b-it-dapo-baseline
 model_id: google/gemma-3-1b-it
-attn_implementation: eager
-torch_dtype: auto
+attn_implementation: flash_attention_2
+torch_dtype: bfloat16
 
 wandb_project: dapo
 wandb_entity: artificial-intelligence-research
@@ -12,7 +12,7 @@ dataset_name: openai/gsm8k
 
 # Training arguments
 use_vllm: true
-loss_type: dr_grpo
+loss_type: bnpo
 epsilon: 0.2
 epsilon_high: null
 beta: 0.04 # KL divergence coefficient

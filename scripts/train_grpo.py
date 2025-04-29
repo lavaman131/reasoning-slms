@@ -14,7 +14,7 @@ from pathlib import Path
 @dataclass
 class ModelArguments:
     model_id: str
-    attn_implementation: str = "eager"
+    attn_implementation: str = "sdpa"
     torch_dtype: str = "auto"
 
 
@@ -197,8 +197,8 @@ def main() -> None:
 
     model = AutoModelForCausalLM.from_pretrained(
         model_args.model_id,
-        attn_implementation=model_args.attn_implementation,
         torch_dtype=model_args.torch_dtype,
+        attn_implementation=model_args.attn_implementation,
     )
 
     tokenizer = AutoTokenizer.from_pretrained(
