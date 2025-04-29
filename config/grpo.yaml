@@ -15,6 +15,7 @@ use_vllm: true
 loss_type: grpo
 epsilon: 0.2
 epsilon_high: null
+beta: 0.04 # KL divergence coefficient
 mask_truncated_completions: false
 learning_rate: 5e-6
 adam_beta1: 0.9
