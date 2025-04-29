@@ -2,11 +2,32 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from datasets import load_dataset
 from typing import Optional, Any, List, Dict, Iterable
 import re
-from trl import GRPOConfig, GRPOTrainer, RewardConfig
+from trl import GRPOConfig, GRPOTrainer, RewardConfig, TrlParser
 from functools import partial, update_wrapper
 import os
 import torch
-from peft import LoraConfig
+from peft import LoraConfig, TaskType, get_peft_model
+from dataclasses import dataclass
+from pathlib import Path
+
+
+@dataclass
+class ModelArguments:
+    model_id: str
+    attn_implementation: str = "eager"
+    torch_dtype: str = "auto"
+
+
+@dataclass
+class DatasetArguments:
+    dataset_name: str
+
+
+@dataclass
+class ExperimentArguments:
+    experiment_name: str
+    wandb_project: str
+    wandb_entity: str
 
 
 def extract_hash_answer(text: str) -> Optional[str]:
@@ -131,8 +152,21 @@ def check_numbers(
 
 
 def main() -> None:
-    os.environ["WANDB_PROJECT"] = "dapo"
-    os.environ["WANDB_ENTITY"] = "artificial-intelligence-research"
+    parser = TrlParser(
+        (ModelArguments, GRPOConfig, DatasetArguments, ExperimentArguments)
+    )
+    model_args, training_args, dataset_args, experiment_args = (
+        parser.parse_args_and_config()
+    )
+    output_dir = Path(training_args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    os.environ["WANDB_PROJECT"] = experiment_args.wandb_project
+    os.environ["WANDB_ENTITY"] = experiment_args.wandb_entity
+
+    assert "HF_TOKEN" in os.environ, (
+        "HF_TOKEN is not set, set it in environment variables"
+    )
     reasoning_start = "<start_working_out>"
     reasoning_end = "<end_working_out>"
     solution_start = "<SOLUTION>"
@@ -154,7 +188,7 @@ def main() -> None:
         rf"{solution_start}.*?([\d\.]{{1,}})", flags=re.MULTILINE | re.DOTALL
     )
 
-    train_dataset = load_dataset("openai/gsm8k", "main", split="train")
+    train_dataset = load_dataset(dataset_args.dataset_name, "main", split="train")
 
     train_dataset = train_dataset.map(
         lambda x: {
@@ -166,74 +200,21 @@ def main() -> None:
         }
     )
 
-    max_seq_length = 1024
-    max_prompt_length = 256
-    experiment_name = "gemma-3-1b-it-grpo-4bit-baseline"
-
-    training_args = GRPOConfig(
-        learning_rate=5e-6,
-        adam_beta1=0.9,
-        adam_beta2=0.99,
-        weight_decay=0.1,
-        warmup_ratio=0.1,
-        lr_scheduler_type="cosine",
-        optim="adamw_torch_fused",
-        ddp_find_unused_parameters=False,
-        logging_steps=1,
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=1,  # Increase to 4 for smoother training
-        num_generations=4,  # Decrease if out of memory
-        max_prompt_length=max_prompt_length,
-        max_completion_length=max_seq_length - max_prompt_length,
-        # num_train_epochs = 1, # Set to 1 for a full training run
-        max_steps=250,
-        save_steps=50,
-        max_grad_norm=0.1,
-        bf16=True,
-        report_to="wandb",  # Can use Weights & Biases
-        run_name=experiment_name,
-        output_dir="outputs",
-        seed=3407,
-    )
-
-    model_id = "google/gemma-3-1b-it"
-    quantization_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_compute_dtype=torch.bfloat16,
-    )
     model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        attn_implementation="eager",
-        quantization_config=quantization_config,
-        torch_dtype="auto",
+        model_args.model_id,
+        attn_implementation=model_args.attn_implementation,
+        torch_dtype=model_args.torch_dtype,
     )
 
     tokenizer = AutoTokenizer.from_pretrained(
-        model_id,
+        model_args.model_id,
         use_fast=True,
         trust_remote_code=True,
-    )
-
-    lora_config = LoraConfig(
-        r=8,  # Larger = higher accuracy, but might overfit
-        lora_alpha=8,  # Recommended alpha == r at least
-        lora_dropout=0,
-        bias="none",
-        target_modules=[
-            "q_proj",
-            "k_proj",
-            "v_proj",
-            "o_proj",
-            "gate_proj",
-            "up_proj",
-            "down_proj",
-        ],
     )
 
     trainer = GRPOTrainer(
         model=model,
         processing_class=tokenizer,
-        peft_config=lora_config,
         reward_funcs=[
             update_wrapper(
                 partial(match_format_exactly, match_format=match_format),
@@ -263,8 +244,8 @@ def main() -> None:
     trainer.train()
 
     # Local saving
-    model.save_pretrained(experiment_name)
-    tokenizer.save_pretrained(experiment_name)
+    model.save_pretrained(output_dir)
+    tokenizer.save_pretrained(output_dir)
 
 
 if __name__ == "__main__":
