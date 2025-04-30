@@ -14,12 +14,12 @@ dataset_name: openai/gsm8k
 use_vllm: true
 loss_type: bnpo
 epsilon: 0.2
-epsilon_high: null # 0.28
+epsilon_high: 0.28
 beta: 0.0 # KL divergence coefficient
 mask_truncated_completions: true # overlong filtering
-use_soft_overlong_punishment: false # true
+use_soft_overlong_punishment: true
 soft_punish_cache: 256
-use_dynamic_sampling: false # true
+use_dynamic_sampling: true
 learning_rate: 5e-6
 adam_beta1: 0.9
 adam_beta2: 0.99

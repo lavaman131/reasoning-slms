@@ -1,7 +1,7 @@
-run_name: gemma-3-1b-it-grpo-baseline
-output_dir: ./outputs/gemma-3-1b-it-grpo-baseline
-model_id: google/gemma-3-1b-it
-attn_implementation: flash_attention_2
+run_name: qwen2-0.5b-it-grpo-baseline
+output_dir: ./outputs/qwen2-0.5b-it-grpo-baseline
+model_id: "Qwen/Qwen2-0.5B-Instruct"
+attn_implementation: sdpa # eager, flash_attention_2
 torch_dtype: bfloat16
 
 wandb_project: dapo
