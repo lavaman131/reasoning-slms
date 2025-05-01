@@ -17,6 +17,7 @@ epsilon: 0.2
 epsilon_high: 0.28
 beta: 0.0 # KL divergence coefficient
 mask_truncated_completions: true # overlong filtering
+scale_rewards: true
 use_soft_overlong_punishment: true
 soft_punish_cache: 256
 use_dynamic_sampling: true
@@ -33,7 +34,7 @@ per_device_train_batch_size: 4
 gradient_accumulation_steps: 1 # Increase to 4 for smoother training
 num_generations: 4 # Decrease if out of memory
 max_prompt_length: 256
-max_completion_length: 768 # 1024 - 256
+max_completion_length: 1792 # 2048 - 256
 max_steps: 250
 save_steps: 50
 max_grad_norm: 0.1
