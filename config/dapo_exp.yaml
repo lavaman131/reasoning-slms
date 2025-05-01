@@ -2,7 +2,7 @@ run_name: qwen2-0.5b-it-dapo-combined
 output_dir: ./outputs/qwen2-0.5b-it-dapo-combined
 model_id: "Qwen/Qwen2-0.5B-Instruct"
 attn_implementation: flash_attention_2 # eager, sdpa
-torch_dtype: bfloat16
+torch_dtype: auto
 
 wandb_project: dapo
 wandb_entity: artificial-intelligence-research
