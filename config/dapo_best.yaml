@@ -1,5 +1,5 @@
-run_name: qwen2.5-0.5b-it-grpo-baseline
-output_dir: ./outputs/qwen2.5-0.5b-it-grpo-baseline
+run_name: qwen2.5-0.5b-it-dapo-combined
+output_dir: ./outputs/qwen2.5-0.5b-it-dapo-combined
 model_id: "unsloth/Qwen2.5-0.5B-Instruct"
 attn_implementation: flash_attention_2
 torch_dtype: bfloat16
@@ -12,12 +12,15 @@ dataset_name: openai/gsm8k
 
 # Training arguments
 use_vllm: true
-loss_type: grpo
+loss_type: dr_grpo
 epsilon: 0.2
 epsilon_high: null
-beta: 0.04 # KL divergence coefficient
-mask_truncated_completions: false
-scale_rewards: true
+beta: 0.0 # KL divergence coefficient
+mask_truncated_completions: true
+scale_rewards: false
+use_soft_overlong_punishment: false
+soft_punish_cache: 256
+use_dynamic_sampling: false
 learning_rate: 5e-6
 adam_beta1: 0.9
 adam_beta2: 0.99

@@ -8,6 +8,6 @@ Reference: https://huggingface.co/docs/trl/main/en/speeding_up_training?vllm+exa
 
 
 ```bash
-CUDA_VISIBLE_DEVICES=4,5,6 trl vllm-serve --model "Qwen/Qwen2-0.5B-Instruct" --dtype bfloat16
-accelerate launch --config_file config/accelerate.yaml scripts/train_grpo.py --config config/grpo.yaml
+CUDA_VISIBLE_DEVICES=4,5,6,7 trl vllm-serve --model "unsloth/Qwen2.5-0.5B-Instruct" --dtype bfloat16
+accelerate launch --config_file config/accelerate.yaml scripts/train_dapo.py --config config/dapo.yaml
 ```
