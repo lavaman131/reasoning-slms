@@ -1,7 +1,7 @@
-run_name: qwen2-0.5b-it-dapo-baseline
-output_dir: ./outputs/qwen2-0.5b-it-dapo-baseline
-model_id: "Qwen/Qwen2-0.5B-Instruct"
-attn_implementation: flash_attention_2 # eager, sdpa
+run_name: qwen2.5-0.5b-it-dapo-no-kld
+output_dir: ./outputs/qwen2.5-0.5b-it-dapo-no-kld
+model_id: "unsloth/Qwen2.5-0.5B-Instruct"
+attn_implementation: flash_attention_2
 torch_dtype: bfloat16
 
 wandb_project: dapo
@@ -12,15 +12,15 @@ dataset_name: openai/gsm8k
 
 # Training arguments
 use_vllm: true
-loss_type: bnpo
+loss_type: grpo
 epsilon: 0.2
-epsilon_high: 0.28
+epsilon_high: null
 beta: 0.0 # KL divergence coefficient
-mask_truncated_completions: true # overlong filtering
+mask_truncated_completions: false
 scale_rewards: true
-use_soft_overlong_punishment: true
+use_soft_overlong_punishment: false
 soft_punish_cache: 256
-use_dynamic_sampling: true
+use_dynamic_sampling: false
 learning_rate: 5e-6
 adam_beta1: 0.9
 adam_beta2: 0.99

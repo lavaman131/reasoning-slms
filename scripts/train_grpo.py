@@ -199,12 +199,12 @@ def main() -> None:
         model_args.model_id,
         torch_dtype=model_args.torch_dtype,
         attn_implementation=model_args.attn_implementation,
+        use_cache=model_args.attn_implementation
+        != "flash_attention_2",  # hacky fix: https://github.com/huggingface/trl/pull/1290
     )
 
     tokenizer = AutoTokenizer.from_pretrained(
-        model_args.model_id,
-        use_fast=True,
-        trust_remote_code=True,
+        model_args.model_id, use_fast=True, trust_remote_code=True, padding_side="left"
     )
 
     trainer = GRPOTrainer(
