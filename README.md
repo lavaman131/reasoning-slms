@@ -12,12 +12,20 @@ uv sync --extra build --extra compile
 
 ## Training
 
+In the config change:
+
+```yaml
+attn_implementation: flash_attention_2 # sdpa or eager if flash-attn not supported by your hardware
+wandb_project: ""
+wandb_entity: ""
+```
+
 Reference: 
 
 Example with 8 GPUs (4 GPUs for training and 4 for vllm inference server):
 
 ```bash
-MODEL="unsloth/Qwen2.5-0.5B-Instruct"
+MODEL="unsloth/Qwen2.5-0.5B-Instruct" # we use unsloth's version as they implement some fixes to the model
 DTYPE="bfloat16"
 ```
 
