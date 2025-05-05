@@ -12,6 +12,8 @@ uv sync --extra build --extra compile
 
 ## Training
 
+Here is the wandb report for our runs for comparison: https://api.wandb.ai/links/artificial-intelligence-research/3nc1wr0u
+
 In the config change:
 
 ```yaml
