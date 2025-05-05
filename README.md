@@ -15,7 +15,8 @@ uv sync --extra build --extra compile
 In the config change:
 
 ```yaml
-attn_implementation: flash_attention_2 # sdpa or eager if flash-attn not supported by your hardware
+# sdpa or eager if flash-attn not supported by your hardware
+attn_implementation: flash_attention_2
 wandb_project: ""
 wandb_entity: ""
 ```
