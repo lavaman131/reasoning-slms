@@ -1,0 +1,25 @@
+[project]
+name = "reasoning-slms"
+version = "0.0.1"
+description = "Experiments with DAPO for post-training small language models (SLMs), systematically experimenting with modifications to the algorithm's core components to determine whether sophisticated reasoning capabilities can be induced in resource-constrained language models without requiring massive computational resources."
+authors = [
+    { name = "Alex Lavaee", email = "alavaee@bu.edu" },
+    { name = "Zach Gentile", email = "zgentile@bu.edu" },
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["wandb", "hf_transfer"]
+
+[project.optional-dependencies]
+build = ["trl[dev]", "ninja"]
+compile = ["flash-attn"]
+
+[tool.uv.sources]
+trl = { git = "https://github.com/lavaman131/trl", branch = "dapo" }
+
+[tool.uv]
+no-build-isolation-package = ["flash-attn"]
+
+[[tool.uv.dependency-metadata]]
+name = "flash-attn"
+requires-dist = ["torch", "einops"]
